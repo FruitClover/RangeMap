@@ -11,6 +11,7 @@ public:
   typedef size_t range_type;
 
   struct Entry {
+    Entry(range_type type_, size_type size_) : type(type_), size(size_) {}
     range_type type;
     size_type size;
   };
@@ -18,9 +19,10 @@ public:
   void AddRange(range_type type, size_type addr, size_type size);
 
 private:
+  friend class RangeMapTest;
   std::map<size_type, Entry> map_;
-}
+};
 
 } // namespace rangemap
 
-#endif RANGEMAP_INCLUDE_H
+#endif // RANGEMAP_INCLUDE_H

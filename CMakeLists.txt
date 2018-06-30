@@ -18,7 +18,7 @@ if (RANGEMAP_ENABLE_UBSAN)
   set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fsanitize=underfined")
 endif()
 
-add_subdirectory(src)
+add_subdirectory(rangemap)
 
 enable_testing()
 add_subdirectory(third_party/googletest)
