@@ -18,13 +18,26 @@ public:
     size_type size;
   };
 
+  // Insert new entry [addr, addr + size]
   void AddRange(range_type type, size_type addr, size_type size);
-  bool TryGetType(size_type addr, range_type* type, size_type* size) const;
-  bool IsCoverRange(size_type addr, size_type size) const;
+
+  // If addr belongs to some entry, fill type and size for this entry
+  bool TryGetEntry(size_type addr, range_type *type, size_type *size) const;
+
+  // Return true is there is no gaps for [addr, addr + size]
+  bool IsRangeCovered(size_type addr, size_type size) const;
 
 private:
+  typedef std::map<size_type, Entry> Map;
+  typedef Map::const_iterator Map_iterator;
+
+  // If size is unknown, return kUnknownSize;
+  size_type GetRangeEnd(Map_iterator it);
+  // Return entry that contains addr. end() otherwise
+  Map_iterator FindContaining(size_type addr);
+
   friend class RangeMapTest;
-  std::map<size_type, Entry> map_;
+  Map map_;
 };
 
 } // namespace rangemap
