@@ -39,6 +39,32 @@ TEST_F(RangeMapTest, AddSimple) {
                   {1, 10, 20},
                   {2, 30, 40}
     });
+
+  // Skip if has no space
+  AddRange(2, 32, 8);
+  AssertRangeMap({
+                  {1, 10, 20},
+                  {2, 30, 40}
+    });
+
+
+  // overlap
+  AddRange(3, 10, 100);
+  AssertRangeMap({
+                  {1, 10, 20},
+                  {3, 20, 30},
+                  {2, 30, 40},
+                  {3, 40, 100}
+    });
+
+  AddRange(3, 0, 100);
+  AssertRangeMap({
+                  {3, 0, 10},
+                  {1, 10, 20},
+                  {3, 20, 30},
+                  {2, 30, 40},
+                  {3, 40, 100}
+    });
 }
 
 } // namespace rangemap
