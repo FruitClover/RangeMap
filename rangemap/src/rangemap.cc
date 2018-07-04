@@ -1,5 +1,5 @@
 #include "rangemap.h"
-#include <cassert>
+#include "utils.h"
 
 namespace rangemap {
 
@@ -49,7 +49,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
 
   size_type beg = addr;
   size_type end = addr + size;
-  assert(end >= size);
+  CHECK(end >= size);
   while(end > beg) {
     beg += it->second.size;
     if (it == map_.end())
@@ -69,7 +69,7 @@ RangeMap::size_type RangeMap::GetRangeEnd(Map_iterator it) {
   }
   size_type end = it->first + it->second.size;
   // TODO: check overflow precisely
-  assert(end >= it->first);
+  CHECK(end >= it->first);
   return (it->first + it->second.size);
 }
 
