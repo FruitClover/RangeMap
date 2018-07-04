@@ -29,12 +29,20 @@ public:
 
 private:
   typedef std::map<size_type, Entry> Map;
-  typedef Map::const_iterator Map_iterator;
 
   // If size is unknown, return kUnknownSize;
-  size_type GetRangeEnd(Map_iterator it);
+  template<class T>
+  size_type GetEntryEnd(T it);
+
   // Return entry that contains addr. end() otherwise
-  Map_iterator FindContaining(size_type addr);
+  Map::const_iterator FindContainingOrNext(size_type addr);
+
+  // True if 'it' has addr
+  template<class T>
+  bool IsEntryContains(T it, size_type addr);
+
+  template<class T>
+  void VerifyEntry(T it);
 
   friend class RangeMapTest;
   Map map_;
