@@ -123,7 +123,6 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) {
   if (it != map_.begin()) {
     // if prev entry contains addr -> return prev entry
     // Get prev:
-    // First element whose key goes after addr (or return end())
     // X      X      X    X       X    X        X      X    X       X
     //     A-------       B--------    C---------------D-------
     // A      A      A    B       B    C        C      D    D       D
@@ -141,7 +140,7 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) {
 
 template<class T>
 bool RangeMap::IsEntryContains(T it, size_type addr) {
-  return ((addr > it->first) && (GetEntryEnd(it) > addr));
+  return ((addr => it->first) && (GetEntryEnd(it) > addr));
 }
 
 template<class T>
