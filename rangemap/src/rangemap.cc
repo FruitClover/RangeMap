@@ -140,7 +140,7 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) {
 
 template<class T>
 bool RangeMap::IsEntryContains(T it, size_type addr) {
-  return ((addr => it->first) && (GetEntryEnd(it) > addr));
+  return ((addr >= it->first) && (GetEntryEnd(it) > addr));
 }
 
 template<class T>

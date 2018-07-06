@@ -41,6 +41,16 @@ private:
   template<class T>
   bool IsEntryContains(T it, size_type addr);
 
+  bool VerifyMappings() const;
+
+  template<class T>
+  void UpdateSize(T it, size_type next_addr);
+
+  template<class T>
+  bool IsEnd(T it) {
+    return (it == map_.end())
+  }
+
   template<class T>
   void VerifyEntry(T it);
 
