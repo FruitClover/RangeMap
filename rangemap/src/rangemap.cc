@@ -31,37 +31,55 @@ namespace rangemap {
 // =
 // >  E--A-----B------------------C---------------------D2---J-------F------
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
-
-  //       A-----                   C---------------------
-  // +              B----------
-  // >     A-----   B----------     C---------------------
-
-
-  //       A-----
-  // +                              C---------------------
-  // >     A-----                   C---------------------
-
-  //       A-----                   C---------------------
-  // +              D>
-  // >     A-----   D---------------C---------------------D>
-
-  //       A-----   D---------------C---------------------D>
-  // +                                      E-----------------
-  // >     A-----   D---------------C---------------------E---
-
-  //       A-----                   C---------------------
-  // +              B---------------------------------------------
-  // >     A-----   B---------------C---------------------B-------
-
-
+  // printf("Adding [%u, %u]\n", addr, addr + size);
   auto it = FindContainingOrNext(addr);
 
-  if (size = kUnknownSize) {
-    // TODO: if prev is unknown size - finish it
-    // TODO: propagate new entry till end
-  }
+  size_type base_beg = addr;
+  size_type base_end = addr + size;
+  while (true) {
+    // TODO: sanity check for overflow?
+    // printf("=== Processing [%u, %u]\n", base_beg, base_end);
+    CHECK(base_end > base_beg);
+    if (IsEnd(it)) {
+      // printf("1Adding [%u, %u]\n", base_beg, base_end);
+      map_.emplace_hint(it, base_beg, Entry(type, base_end - base_beg));
+      break;
+    }
+    if (IsEntryContains(it, base_beg)) {
+      base_beg = GetEntryEnd(it);
+    } else {
+      size_type next_beg = it->first;
+      if (base_end > next_beg) {
+        // printf("3Adding [%u, %u]\n", base_beg, next_beg);
+        map_.emplace_hint(it, base_beg, Entry(type, next_beg - base_beg));
+        base_beg = GetEntryEnd(it);
+      }
+    }
+    ++it;
 
-  map_.emplace(addr, Entry(type, size));
+    if (base_beg >= base_end) {
+      break;
+    }
+
+    if (IsEnd(it)) {
+      // printf("2Adding [%u, %u]\n", base_beg, base_end);
+      map_.emplace_hint(it, base_beg, Entry(type, base_end - base_beg));
+      break;
+    }
+
+    if (base_beg >= base_end) {
+      break;
+    }
+  }
+  // printf("= New map:\n");
+  // if (map_.empty()) {
+  //   printf(" [EMPTY]\n");
+  // } else {
+  //   for (auto ind : map_) {
+  //     printf("= [%u, %u]\n", ind.first, ind.first + ind.second.size);
+  //   }
+  //   printf("\n");
+  // }
 }
 
 bool RangeMap::TryGetEntry(size_type addr, range_type *type,
