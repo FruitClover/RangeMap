@@ -108,14 +108,13 @@ RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
 }
 
 RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
-  // TODO: Not checked
   auto it = map_.upper_bound(addr);  // O(log N)
   // TODO: simplified
   if (IsBegin(it)) {
     return map_.end();
   }
-  auto prev = std::prev(it);
-  if (!IsEntryContains(prev, addr)) {
+  --it;
+  if (!IsEntryContains(it, addr)) {
     return map_.end();
   }
   return it;
