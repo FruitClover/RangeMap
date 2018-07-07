@@ -22,7 +22,7 @@ protected:
   }
 
   void AssertRangeMap(const std::vector<TestEntry> &ranges) {
-    ASSERT_EQ(ranges.size(), range_map_.map_.size());
+    EXPECT_EQ(ranges.size(), range_map_.map_.size());
     auto iter = range_map_.map_.begin();
     size_t i = 0;
     for (; iter != range_map_.map_.end() && i < ranges.size(); ++iter, ++i) {

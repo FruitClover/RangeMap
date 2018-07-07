@@ -31,55 +31,34 @@ namespace rangemap {
 // =
 // >  E--A-----B------------------C---------------------D2---J-------F------
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
-  // printf("Adding [%u, %u]\n", addr, addr + size);
   auto it = FindContainingOrNext(addr);
 
   size_type base_beg = addr;
   size_type base_end = addr + size;
+  CHECK(base_end > base_beg);
   while (true) {
     // TODO: sanity check for overflow?
-    // printf("=== Processing [%u, %u]\n", base_beg, base_end);
-    CHECK(base_end > base_beg);
     if (IsEnd(it)) {
-      // printf("1Adding [%u, %u]\n", base_beg, base_end);
       map_.emplace_hint(it, base_beg, Entry(type, base_end - base_beg));
       break;
-    }
-    if (IsEntryContains(it, base_beg)) {
-      base_beg = GetEntryEnd(it);
     } else {
-      size_type next_beg = it->first;
-      if (base_end > next_beg) {
-        // printf("3Adding [%u, %u]\n", base_beg, next_beg);
-        map_.emplace_hint(it, base_beg, Entry(type, next_beg - base_beg));
+      VerifyEntry(it);
+      if (IsEntryContains(it, base_beg)) {
         base_beg = GetEntryEnd(it);
+      } else {
+        size_type next_beg = it->first;
+        if (base_end > next_beg) {
+          map_.emplace_hint(it, base_beg, Entry(type, next_beg - base_beg));
+          base_beg = GetEntryEnd(it);
+        }
       }
     }
+
+    if (base_beg >= base_end) {
+      break;
+    }
     ++it;
-
-    if (base_beg >= base_end) {
-      break;
-    }
-
-    if (IsEnd(it)) {
-      // printf("2Adding [%u, %u]\n", base_beg, base_end);
-      map_.emplace_hint(it, base_beg, Entry(type, base_end - base_beg));
-      break;
-    }
-
-    if (base_beg >= base_end) {
-      break;
-    }
   }
-  // printf("= New map:\n");
-  // if (map_.empty()) {
-  //   printf(" [EMPTY]\n");
-  // } else {
-  //   for (auto ind : map_) {
-  //     printf("= [%u, %u]\n", ind.first, ind.first + ind.second.size);
-  //   }
-  //   printf("\n");
-  // }
 }
 
 bool RangeMap::TryGetEntry(size_type addr, range_type *type,
@@ -111,6 +90,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
 
 template<class T>
 RangeMap::size_type RangeMap::GetEntryEnd(T it) {
+  CHECK(!IsEnd(it));
   if (it->second.size == kUnknownSize) {
     return kUnknownSize;
   }
@@ -167,7 +147,7 @@ void RangeMap::VerifyEntry(T it) {
   CHECK(it->first + it->second.size > it->first);
   // Pos in mappings
   CHECK(std::next(it) == map_.end() || GetEntryEnd(it) <= std::next(it)->first);
-  CHECK(std::prev(it) == map_.begin() ||
+  CHECK(it == map_.begin() ||
         GetEntryEnd(std::prev(it)) <= it->first);
 }
 

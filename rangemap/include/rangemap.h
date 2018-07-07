@@ -48,7 +48,7 @@ private:
 
   template<class T>
   bool IsEnd(T it) {
-    return (it == map_.end())
+    return (it == map_.end());
   }
 
   template<class T>

@@ -41,6 +41,17 @@ TEST_F(RangeMapTest, AddRange) {
       {3, 40, 50}
     });
 
+  // Keep types
+  AddRange(1, 10, 40);
+  AssertRangeMap({
+      {1, 10, 20},
+      {3, 20, 22},
+      {1, 22, 27},
+      {3, 27, 30},
+      {2, 30, 40},
+      {3, 40, 50}
+    });
+
   AddRange(4, 0, 100);
   AssertRangeMap({
       {4, 0, 10},
@@ -51,6 +62,64 @@ TEST_F(RangeMapTest, AddRange) {
       {2, 30, 40},
       {3, 40, 50},
       {4, 50, 100}
+    });
+}
+
+TEST_F(RangeMapTest, AddRangeMiddleInsert) {
+  AddRange(1, 10, 30);
+  AssertRangeMap({
+      {1, 10, 40}
+    });
+
+  AddRange(2, 50, 30);
+  AssertRangeMap({
+      {1, 10, 40},
+      {2, 50, 80}
+    });
+
+  AddRange(3, 100, 50);
+  AssertRangeMap({
+      {1, 10, 40},
+      {2, 50, 80},
+      {3, 100, 150}
+    });
+
+  AddRange(4, 0, 1);
+  AssertRangeMap({
+      {4, 0, 1},
+      {1, 10, 40},
+      {2, 50, 80},
+      {3, 100, 150}
+    });
+
+  AddRange(4, 45, 1);
+  AssertRangeMap({
+      {4, 0, 1},
+      {1, 10, 40},
+      {4, 45, 46},
+      {2, 50, 80},
+      {3, 100, 150}
+    });
+
+  AddRange(4, 80, 1);
+  AssertRangeMap({
+      {4, 0, 1},
+      {1, 10, 40},
+      {4, 45, 46},
+      {2, 50, 80},
+      {4, 80, 81},
+      {3, 100, 150}
+    });
+
+  AddRange(4, 99, 1);
+  AssertRangeMap({
+      {4, 0, 1},
+      {1, 10, 40},
+      {4, 45, 46},
+      {2, 50, 80},
+      {4, 80, 81},
+      {4, 99, 100},
+      {3, 100, 150}
     });
 }
 
