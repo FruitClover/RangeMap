@@ -3,33 +3,6 @@
 
 namespace rangemap {
 
-// +     A-----
-// =
-// >     A-----
-
-// +           B..>
-// =
-// >     A-----B..>
-
-// +                              C---------------------
-// =
-// >     A-----B------------------C---------------------
-
-// +                                                         J-------
-// =
-// >     A-----B------------------C---------------------     J-------
-
-// +       D1------          D2..>
-// =
-// >     A-----B------------------C---------------------D2---J-------
-
-// +  E..>
-// =
-// >  E--A-----B------------------C---------------------D2---J-------
-
-// +  F---------------------------------------------------------------------
-// =
-// >  E--A-----B------------------C---------------------D2---J-------F------
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
   auto it = FindContainingOrNext(addr);
 
@@ -115,14 +88,6 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) con
   // X      X      X    X       X    X        X      X    X       X
   //     A-------       B--------    C---------------D-------
   // A      A      B    B       C    C        C      D    D       -
-
-  //  X
-  //
-  //  -
-
-  // X        X
-  // A-----
-  // A        -
 
   // First element whose key goes after addr (or return end())
   // X      X      X    X       X    X        X      X    X       X

@@ -122,6 +122,87 @@ TEST_F(RangeMapTest, AddRangeMiddleInsert) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeUnknownSize) {
+  AddRange(1, 10, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, RangeMap::kUnknownSize}
+    });
+
+  AddRange(2, 20, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, 20},
+      {2, 20, RangeMap::kUnknownSize}
+    });
+
+
+  AddRange(2, 0, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, RangeMap::kUnknownSize}
+    });
+
+  AddRange(3, 40, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, RangeMap::kUnknownSize}
+    });
+
+  AddRange(4, 50, 10);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, 50},
+      {4, 50, 60}
+    });
+
+  AddRange(5, 100, 50);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, 50},
+      {4, 50, 60},
+      {5, 100, 150}
+    });
+
+  AddRange(6, 90, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, 50},
+      {4, 50, 60},
+      {6, 90, 100},
+      {5, 100, 150}
+    });
+
+  AddRange(6, 90, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, 50},
+      {4, 50, 60},
+      {6, 90, 100},
+      {5, 100, 150}
+    });
+
+  AddRange(6, 60, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {2, 0, 10},
+      {1, 10, 20},
+      {2, 20, 40},
+      {3, 40, 50},
+      {4, 50, 60},
+      {6, 60, 100},
+      {5, 100, 150}
+    });
+}
+
 TEST_F(RangeMapTest, RangeCover) {
   // [5, 55]
   AddRange(1, 5, 50);
