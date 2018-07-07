@@ -31,11 +31,38 @@ private:
   typedef std::map<size_type, Entry> Map;
 
   // If size is unknown, return kUnknownSize;
-  template<class T>
-  size_type GetEntryEnd(T it) const;
+  template <class T>
+  RangeMap::size_type RangeMap::GetEntryEnd(T it) const {
+    // TODO: accept end to simplified other functions
+    CHECK(!IsEnd(it));
+    if (it->second.size == kUnknownSize) {
+      return kUnknownSize;
+    }
+    size_type end = it->first + it->second.size;
+    // TODO: check overflow precisely
+    CHECK(end >= it->first);
+    return end;
+  }
 
-  // Return entry that contains addr. end() otherwise
-  Map::const_iterator FindContainingOrNext(size_type addr) const;
+  template <class T>
+  RangeMap::size_type RangeMap::GetEntryBegin(T it) const {
+    // TODO: accept end to simplified other functions
+    CHECK(!IsEnd(it));
+    return it->first;
+  }
+
+  template <class T>
+  RangeMap::size_type RangeMap::GetEntrySize(T it) const {
+    // TODO: accept end to simplified other functions
+    CHECK(!IsEnd(it));
+    return it->second.size;
+  }
+
+  // Get entry that contains addr or the next one
+  Map::const_iterator GetContainingOrNext(size_type addr) const;
+
+  // Get entry that contains addr or end() otherwise
+  Map::const_iterator GetContaining(size_type addr) const;
 
   // True if 'it' has addr
   template<class T>
@@ -49,6 +76,11 @@ private:
   template<class T>
   bool IsEnd(T it) const {
     return (it == map_.end());
+  }
+
+  template<class T>
+  bool IsBegin(T it) const {
+    return (it == map_.begin());
   }
 
   template<class T>

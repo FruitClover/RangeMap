@@ -4,7 +4,7 @@
 namespace rangemap {
 
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
-  auto it = FindContainingOrNext(addr);
+  auto it = GetContainingOrNext(addr);
 
   size_type base_beg = addr;
   size_type base_end = addr + size;
@@ -19,7 +19,7 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
       if (IsEntryContains(it, base_beg)) {
         base_beg = GetEntryEnd(it);
       } else {
-        size_type next_beg = it->first;
+        size_type next_beg = GetEntryBegin(it);
         if (base_end > next_beg) {
           map_.emplace_hint(it, base_beg, Entry(type, next_beg - base_beg));
           base_beg = GetEntryEnd(it);
@@ -45,7 +45,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   }
   // TODO: strict check overflow
   CHECK(addr + size > addr);
-  auto it = FindContainingOrNext(addr);
+  auto it = GetContainingOrNext(addr);
   if (IsEnd(it)) {
     return false; 
   }
@@ -59,7 +59,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
         return false;
       } else {
         if (IsEntryContains(it, addr + cover)) {
-        cover += it->second.size;
+          cover += GetEntrySize(it);
         } else {
           return false;
         }
@@ -71,20 +71,8 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   return false;
 }
 
-template<class T>
-RangeMap::size_type RangeMap::GetEntryEnd(T it) const {
-  // TODO: accept end to simplified other functions
-  CHECK(!IsEnd(it));
-  if (it->second.size == kUnknownSize) {
-    return kUnknownSize;
-  }
-  size_type end = it->first + it->second.size;
-  // TODO: check overflow precisely
-  CHECK(end >= it->first);
-  return end;
-}
-
-RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) const {
+RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
+    size_type addr) const {
   // X      X      X    X       X    X        X      X    X       X
   //     A-------       B--------    C---------------D-------
   // A      A      B    B       C    C        C      D    D       -
@@ -94,7 +82,7 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) con
   //     A-------       B--------    C---------------D-------
   // A      B      B    C       C    D        D      end  end     end
   auto it = map_.upper_bound(addr); // O(log N)
-  if (it != map_.begin()) {
+  if (!IsBegin(it)) {
     // if prev entry contains addr -> return prev entry
     // Get prev:
     // X      X      X    X       X    X        X      X    X       X
@@ -112,19 +100,33 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) con
   }
 }
 
-template<class T>
-bool RangeMap::IsEntryContains(T it, size_type addr) const {
-  return ((addr >= it->first) && (GetEntryEnd(it) > addr));
+RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
+  // TODO: Not checked
+  auto it = map_.upper_bound(addr); // O(log N)
+  // TODO: simplified
+  if (IsBegin(it)) {
+    return map_.end();
+  }
+  auto prev = std::prev(it);
+  if (!IsEntryContains(prev, addr)) {
+    return map_.end();
+  }
+  return it;
 }
 
 template<class T>
+bool RangeMap::IsEntryContains(T it, size_type addr) const {
+  return ((addr >= GetEntryBegin(it)) && (GetEntryEnd(it) > addr));
+}
+
+template <class T>
 void RangeMap::VerifyEntry(T it) const {
   // TODO: strict check overflow
-  CHECK(it->first + it->second.size > it->first);
+  CHECK(GetEntryBegin(it) + GetEntrySize(it) > GetEntryBegin(it));
   // Pos in mappings
-  CHECK(std::next(it) == map_.end() || GetEntryEnd(it) <= std::next(it)->first);
-  CHECK(it == map_.begin() ||
-        GetEntryEnd(std::prev(it)) <= it->first);
+  CHECK(IsEnd(std::next(it)) ||
+        GetEntryEnd(it) <= GetEntryBegin(std::next(it)));
+  CHECK(IsBegin(it) || GetEntryEnd(std::prev(it)) <= GetEntryBegin(it));
 }
 
 } // namespace rangemap
