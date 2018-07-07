@@ -35,7 +35,16 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
 
 bool RangeMap::TryGetEntry(size_type addr, range_type *type,
                            size_type *size) const {
-  return false;
+  auto it = GetContaining(addr);
+  if (IsEnd(it)) {
+    return false;
+  } else {
+    // TODO: overdose
+    CHECK(IsEntryContains(it, addr));
+    *type = it->second.type;
+    *size = it->second.size;
+    return true;
+  }
 }
 
 bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {

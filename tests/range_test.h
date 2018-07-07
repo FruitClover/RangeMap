@@ -43,7 +43,7 @@ protected:
 
   void AssertGetType(TestEntry entry, uint64_t beg, uint64_t end) {
     ASSERT_GE(end, beg);
-    for (uint64_t addr = beg; addr <= end; ++addr) {
+    for (uint64_t addr = beg; addr < end; ++addr) {
       uint64_t t, sz;
       bool is_found = range_map_.TryGetEntry(addr, &t, &sz);
       ASSERT_TRUE(is_found);

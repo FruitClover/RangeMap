@@ -255,21 +255,22 @@ TEST_F(RangeMapTest, GetType) {
   AssertGetType({2, 20, 30}, 20, 30);
 
   AddRange(3, 0, 50);
-  AssertGetType({4, 0, 5}, 0, 5);
+  AssertGetType({3, 0, 5}, 0, 5);
   AssertGetType({1, 5, 15}, 5, 15);
-  AssertGetType({4, 15, 20}, 15, 20);
-  AssertGetType({2, 20, 30}, 15, 30);
-  AssertGetType({4, 30, 50}, 30, 50);
+  AssertGetType({3, 15, 20}, 15, 20);
+  AssertGetType({2, 20, 30}, 20, 30);
+  AssertGetType({3, 30, 50}, 30, 50);
 
   // Do not override type
   AddRange(4, 5, 10);
   AddRange(4, 20, 10);
   AddRange(4, 0, 50);
-  AssertGetType({4, 0, 5}, 0, 5);
+  AssertGetType({3, 0, 5}, 0, 5);
   AssertGetType({1, 5, 15}, 5, 15);
-  AssertGetType({4, 15, 20}, 15, 20);
-  AssertGetType({2, 20, 30}, 15, 30);
-  AssertGetType({4, 30, 50}, 30, 50);
+  AssertGetType({3, 15, 20}, 15, 20);
+  AssertGetType({2, 20, 30}, 20, 30);
+  AssertGetType({3, 30, 50}, 30, 50);
+  return;
 }
 
 TEST_F(RangeMapTest, Gaps) {
