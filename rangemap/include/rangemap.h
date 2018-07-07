@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <map>
+#include "utils.h"
 
 namespace rangemap {
 
@@ -32,7 +33,7 @@ class RangeMap {
 
   // If size is unknown, return kUnknownSize;
   template <class T>
-  RangeMap::size_type RangeMap::GetEntryEnd(T it) const {
+  size_type GetEntryEnd(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     if (it->second.size == kUnknownSize) {
@@ -45,14 +46,14 @@ class RangeMap {
   }
 
   template <class T>
-  RangeMap::size_type RangeMap::GetEntryBegin(T it) const {
+  size_type GetEntryBegin(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     return it->first;
   }
 
   template <class T>
-  RangeMap::size_type RangeMap::GetEntrySize(T it) const {
+  size_type GetEntrySize(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     return it->second.size;

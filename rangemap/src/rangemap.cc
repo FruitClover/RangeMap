@@ -1,5 +1,4 @@
 #include "rangemap.h"
-#include "utils.h"
 
 namespace rangemap {
 
