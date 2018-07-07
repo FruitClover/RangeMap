@@ -67,25 +67,35 @@ bool RangeMap::TryGetEntry(size_type addr, range_type *type,
 }
 
 bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
-  auto it = map_.upper_bound(addr);
-  if (it != map_.begin()) {
-    --it;
+  if (size == 0) {
+    return true;
+  }
+  // TODO: strict check overflow
+  CHECK(addr + size > addr);
+  auto it = FindContainingOrNext(addr);
+  if (IsEnd(it)) {
+    return false; 
   }
 
-  size_type beg = addr;
-  size_type end = addr + size;
-  CHECK(end >= size);
-  while(end > beg) {
-    beg += it->second.size;
-    if (it == map_.end())
-      return false;
-    // There is no element on the right side
-    // x..> covers [addr, addr + size]
-    if (it->second.size == kUnknownSize) {
-      return true;
+  if (IsEntryContains(it, addr)) {
+    CHECK(GetEntryEnd(it) > addr);
+    size_type cover = GetEntryEnd(it) - addr;
+    while (size > cover) {
+      ++it;
+      if (IsEnd(it)) {
+        return false;
+      } else {
+        if (IsEntryContains(it, addr + cover)) {
+        cover += it->second.size;
+        } else {
+          return false;
+        }
+      }
     }
+    return true;
   }
-  return true;
+  
+  return false;
 }
 
 template<class T>

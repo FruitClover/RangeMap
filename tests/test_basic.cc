@@ -14,7 +14,6 @@ TEST_F(RangeMapTest, AddRange) {
       {2, 30, 40}
     });
 
-
   AddRange(1, 22, 5);
   AssertRangeMap({
       {1, 10, 20},
@@ -149,6 +148,19 @@ TEST_F(RangeMapTest, RangeCover) {
   AssertCover(false, 0, 5);
   AssertCover(false, 60, 70);
   AssertCover(false, 80, 100);
+
+  //  [5, 55] + [20, 60] + [70, 80]  + [81,82]
+  // =[5, 60] + [70, 80] + [81. 82]
+  AddRange(3, 81, 1);
+  AssertCover(true, 5, 55);
+  AssertCover(true, 20, 60);
+  AssertCover(true, 5, 60);
+  AssertCover(true, 70, 80);
+  AssertCover(true, 81, 82);
+  AssertCover(false, 0, 5);
+  AssertCover(false, 60, 70);
+  AssertCover(false, 80, 81);
+  AssertCover(false, 82, 100);
 }
 
 TEST_F(RangeMapTest, GetType) {

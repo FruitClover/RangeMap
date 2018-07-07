@@ -36,7 +36,7 @@ protected:
     ASSERT_GT(end, beg);
     for (uint64_t b = beg; b <= end; ++b) {
       for (uint64_t e = end; e > b; --e) {
-        ASSERT_EQ(is_actually_covered, range_map_.IsRangeCovered(b, e));
+        ASSERT_EQ(is_actually_covered, range_map_.IsRangeCovered(b, e - b));
       }
     }
   }
@@ -49,14 +49,6 @@ protected:
       ASSERT_TRUE(is_found);
       EXPECT_EQ(entry.type, t);
       // TODO: check all other outputs
-    }
-  }
-
-  void TestBounds(int max) {
-    for (int i = 0; i < max; ++i) {
-      uint64_t lo = range_map_.map_.lower_bound(i)->first;
-      uint64_t up = range_map_.map_.upper_bound(i)->first;
-      printf("%02d: lower = %02u, upper = %2u\n", i, lo, up);
     }
   }
 
