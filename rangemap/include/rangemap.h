@@ -1,13 +1,13 @@
 #ifndef RANGEMAP_INCLUDE_H
 #define RANGEMAP_INCLUDE_H
 
-#include <map>
 #include <limits>
+#include <map>
 
 namespace rangemap {
 
 class RangeMap {
-public:
+ public:
   typedef uint64_t size_type;
   typedef size_t range_type;
   static const size_type kUnknownSize = std::numeric_limits<size_type>::max();
@@ -27,7 +27,7 @@ public:
   // Return true is there is no gaps for [addr, addr + size]
   bool IsRangeCovered(size_type addr, size_type size) const;
 
-private:
+ private:
   typedef std::map<size_type, Entry> Map;
 
   // If size is unknown, return kUnknownSize;
@@ -65,31 +65,31 @@ private:
   Map::const_iterator GetContaining(size_type addr) const;
 
   // True if 'it' has addr
-  template<class T>
+  template <class T>
   bool IsEntryContains(T it, size_type addr) const;
 
   bool VerifyMappings() const;
 
-  template<class T>
+  template <class T>
   void UpdateSize(T it, size_type next_addr);
 
-  template<class T>
+  template <class T>
   bool IsEnd(T it) const {
     return (it == map_.end());
   }
 
-  template<class T>
+  template <class T>
   bool IsBegin(T it) const {
     return (it == map_.begin());
   }
 
-  template<class T>
+  template <class T>
   void VerifyEntry(T it) const;
 
   friend class RangeMapTest;
   Map map_;
 };
 
-} // namespace rangemap
+}  // namespace rangemap
 
-#endif // RANGEMAP_INCLUDE_H
+#endif  // RANGEMAP_INCLUDE_H

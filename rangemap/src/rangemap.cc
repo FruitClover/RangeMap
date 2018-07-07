@@ -47,7 +47,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   CHECK(addr + size > addr);
   auto it = GetContainingOrNext(addr);
   if (IsEnd(it)) {
-    return false; 
+    return false;
   }
 
   if (IsEntryContains(it, addr)) {
@@ -67,7 +67,6 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
     }
     return true;
   }
-  
   return false;
 }
 
@@ -81,7 +80,7 @@ RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
   // X      X      X    X       X    X        X      X    X       X
   //     A-------       B--------    C---------------D-------
   // A      B      B    C       C    D        D      end  end     end
-  auto it = map_.upper_bound(addr); // O(log N)
+  auto it = map_.upper_bound(addr);  // O(log N)
   if (!IsBegin(it)) {
     // if prev entry contains addr -> return prev entry
     // Get prev:
@@ -102,7 +101,7 @@ RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
 
 RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
   // TODO: Not checked
-  auto it = map_.upper_bound(addr); // O(log N)
+  auto it = map_.upper_bound(addr);  // O(log N)
   // TODO: simplified
   if (IsBegin(it)) {
     return map_.end();
@@ -114,7 +113,7 @@ RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
   return it;
 }
 
-template<class T>
+template <class T>
 bool RangeMap::IsEntryContains(T it, size_type addr) const {
   return ((addr >= GetEntryBegin(it)) && (GetEntryEnd(it) > addr));
 }
