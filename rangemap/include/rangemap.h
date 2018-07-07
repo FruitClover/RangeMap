@@ -32,14 +32,14 @@ private:
 
   // If size is unknown, return kUnknownSize;
   template<class T>
-  size_type GetEntryEnd(T it);
+  size_type GetEntryEnd(T it) const;
 
   // Return entry that contains addr. end() otherwise
-  Map::const_iterator FindContainingOrNext(size_type addr);
+  Map::const_iterator FindContainingOrNext(size_type addr) const;
 
   // True if 'it' has addr
   template<class T>
-  bool IsEntryContains(T it, size_type addr);
+  bool IsEntryContains(T it, size_type addr) const;
 
   bool VerifyMappings() const;
 
@@ -47,12 +47,12 @@ private:
   void UpdateSize(T it, size_type next_addr);
 
   template<class T>
-  bool IsEnd(T it) {
+  bool IsEnd(T it) const {
     return (it == map_.end());
   }
 
   template<class T>
-  void VerifyEntry(T it);
+  void VerifyEntry(T it) const;
 
   friend class RangeMapTest;
   Map map_;

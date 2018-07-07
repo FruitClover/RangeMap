@@ -89,7 +89,8 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
 }
 
 template<class T>
-RangeMap::size_type RangeMap::GetEntryEnd(T it) {
+RangeMap::size_type RangeMap::GetEntryEnd(T it) const {
+  // TODO: accept end to simplified other functions
   CHECK(!IsEnd(it));
   if (it->second.size == kUnknownSize) {
     return kUnknownSize;
@@ -100,7 +101,7 @@ RangeMap::size_type RangeMap::GetEntryEnd(T it) {
   return end;
 }
 
-RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) {
+RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) const {
   // X      X      X    X       X    X        X      X    X       X
   //     A-------       B--------    C---------------D-------
   // A      A      B    B       C    C        C      D    D       -
@@ -137,12 +138,12 @@ RangeMap::Map::const_iterator RangeMap::FindContainingOrNext(size_type addr) {
 }
 
 template<class T>
-bool RangeMap::IsEntryContains(T it, size_type addr) {
+bool RangeMap::IsEntryContains(T it, size_type addr) const {
   return ((addr >= it->first) && (GetEntryEnd(it) > addr));
 }
 
 template<class T>
-void RangeMap::VerifyEntry(T it) {
+void RangeMap::VerifyEntry(T it) const {
   // TODO: strict check overflow
   CHECK(it->first + it->second.size > it->first);
   // Pos in mappings
