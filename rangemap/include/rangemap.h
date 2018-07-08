@@ -28,6 +28,8 @@ class RangeMap {
   // Return true is there is no gaps for [addr, addr + size]
   bool IsRangeCovered(size_type addr, size_type size) const;
 
+  // True is there are no gaps in mapping
+  bool IsContinious() const;
  private:
   typedef std::map<size_type, Entry> Map;
 
@@ -43,6 +45,24 @@ class RangeMap {
     // TODO: check overflow precisely
     CHECK(end >= it->first);
     return end;
+  }
+
+  template <class T>
+  size_type GetEntryEndStrict(T it) const {
+    // TODO: accept end to simplified other functions
+    if (it->second.size == kUnknownSize) {
+      auto next = std::next(it);
+      if (ItEnd(next)) {
+        return kUnknownSize;
+      } else {
+        return GetEntryBegin(next);
+      }
+    } else {
+      size_type end = it->first + it->second.size;
+      // TODO: check overflow precisely
+      CHECK(end >= it->first);
+      return end;
+    }
   }
 
   template <class T>
@@ -86,6 +106,10 @@ class RangeMap {
 
   template <class T>
   void VerifyEntry(T it) const;
+
+  // Find first gap between start and end, return map_.end() if none
+  template<class T>
+  T FindFirstGap(T start, T end) const;
 
   friend class RangeMapTest;
   Map map_;
