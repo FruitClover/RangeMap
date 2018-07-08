@@ -18,6 +18,12 @@ if (RANGEMAP_ENABLE_UBSAN)
   set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fsanitize=underfined")
 endif()
 
+# Update git submodules
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules")
+  execute_process(COMMAND git submodule update --init --recursive
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 add_subdirectory(rangemap)
 
 enable_testing()
