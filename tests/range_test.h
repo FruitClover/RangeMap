@@ -21,7 +21,16 @@ protected:
     range_map_.AddRange(ind, addr, size);
   }
 
+  void AssertConsistency() {
+    uint64_t prev_end = 0;
+    for (auto it = range_map_.map_.begin(); it != range_map_.map_.end(); ++it) {
+      ASSERT_GE(it->first, prev_end);
+      prev_end = range_map_.GetEntryEnd(it);
+    }
+  }
+
   void AssertRangeMap(const std::vector<TestEntry> &ranges) {
+    AssertConsistency();
     EXPECT_EQ(ranges.size(), range_map_.map_.size());
     auto iter = range_map_.map_.begin();
     size_t i = 0;
@@ -33,6 +42,7 @@ protected:
   }
 
   void AssertCover(bool is_actually_covered, uint64_t beg, uint64_t end) {
+    AssertConsistency();
     ASSERT_GT(end, beg);
     for (uint64_t b = beg; b <= end; ++b) {
       for (uint64_t e = end; e > b; --e) {
@@ -42,6 +52,7 @@ protected:
   }
 
   void AssertGetType(TestEntry entry, uint64_t beg, uint64_t end) {
+    AssertConsistency();
     ASSERT_GE(end, beg);
     for (uint64_t addr = beg; addr < end; ++addr) {
       uint64_t t, sz;
