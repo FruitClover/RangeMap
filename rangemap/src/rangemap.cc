@@ -3,8 +3,43 @@
 namespace rangemap {
 
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
+  // TODO: Add option to merge regions for the same type
+  if (size == kUnknownSize) {
+    AddRangeUnknownSize(type, addr);
+  } else {
+    AddRangeFixedSize(type, addr, size);
+  }
+}
+
+void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
+  // Can spawn only 1 range, maybe fix prev entry size
+  auto it = GetContainingOrNext(addr);
+  // printf("Adding [%u, kUnknownSize) entry\n", addr);
+  size_type base_beg = addr;
+  size_type base_size = kUnknownSize;
+
+  if (!IsEnd(it)) {
+    if (IsEntryContains(it, addr)) {
+      auto next = std::next(it);
+      if (IsEnd(next)) {
+        // If prev is unknown size --> fix
+          it->second.size = addr - it->first;
+      } else {
+        base_size = GetEntryBegin(next) - GetEntryEnd(it);
+      }
+      base_beg = GetEntryEnd(it);
+    } else {
+      base_size = GetEntryBegin(it) - addr;
+    }
+  }
+
+  map_.emplace_hint(it, base_beg, Entry(type, base_size));
+}
+
+void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size) {
   auto it = GetContainingOrNext(addr);
 
+  // printf("Adding [%u, %u) entry\n", addr, addr + size);
   size_type base_beg = addr;
   size_type base_end = addr + size;
   CHECK(base_end > base_beg);
@@ -16,7 +51,12 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
     } else {
       VerifyEntry(it);
       if (IsEntryContains(it, base_beg)) {
-        base_beg = GetEntryEnd(it);
+        if (GetEntryEnd(it) == kUnknownSize) {
+          // If prev is unknown size --> fix
+          it->second.size = addr - it->first;
+        } else {
+          base_beg = GetEntryEnd(it);
+        }
       } else {
         size_type next_beg = GetEntryBegin(it);
         if (base_end > next_beg) {
@@ -107,6 +147,20 @@ RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
   }
 }
 
+RangeMap::Map::iterator RangeMap::GetContainingOrNext(size_type addr) {
+  auto it = map_.upper_bound(addr);  // O(log N)
+  if (!IsBegin(it)) {
+    auto prev = std::prev(it);
+    if (IsEntryContains(prev, addr)) {
+      return prev;
+    } else {
+      return std::next(prev);
+    }
+  } else {
+    return it;
+  }
+}
+
 RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
   auto it = map_.upper_bound(addr);  // O(log N)
   // TODO: simplified
@@ -128,7 +182,9 @@ bool RangeMap::IsEntryContains(T it, size_type addr) const {
 template <class T>
 void RangeMap::VerifyEntry(T it) const {
   // TODO: strict check overflow
-  CHECK(GetEntryBegin(it) + GetEntrySize(it) > GetEntryBegin(it));
+  if (GetEntrySize(it) != kUnknownSize) {
+    CHECK(GetEntryBegin(it) + GetEntrySize(it) > GetEntryBegin(it));
+  }
   // Pos in mappings
   CHECK(IsEnd(std::next(it)) ||
         GetEntryEnd(it) <= GetEntryBegin(std::next(it)));

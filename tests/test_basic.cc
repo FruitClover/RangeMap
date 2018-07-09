@@ -134,6 +134,12 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
       {2, 20, RangeMap::kUnknownSize}
     });
 
+  // Repeat
+  AddRange(2, 20, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, 20},
+      {2, 20, RangeMap::kUnknownSize}
+    });
 
   AddRange(2, 0, RangeMap::kUnknownSize);
   AssertRangeMap({
@@ -198,7 +204,8 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
       {2, 20, 40},
       {3, 40, 50},
       {4, 50, 60},
-      {6, 60, 100},
+      {6, 60, 90},
+      {6, 90, 100},
       {5, 100, 150}
     });
 }

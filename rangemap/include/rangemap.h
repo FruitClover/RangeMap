@@ -30,8 +30,12 @@ class RangeMap {
 
   // True is there are no gaps in mapping
   bool IsContinious() const;
+
  private:
   typedef std::map<size_type, Entry> Map;
+
+  void AddRangeUnknownSize(size_type type, size_type addr);
+  void AddRangeFixedSize(size_type type, size_type addr, size_type size);
 
   // If size is unknown, return kUnknownSize;
   template <class T>
@@ -81,6 +85,7 @@ class RangeMap {
 
   // Get entry that contains addr or the next one
   Map::const_iterator GetContainingOrNext(size_type addr) const;
+  Map::iterator GetContainingOrNext(size_type addr);
 
   // Get entry that contains addr or end() otherwise
   Map::const_iterator GetContaining(size_type addr) const;
