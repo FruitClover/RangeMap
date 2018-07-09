@@ -134,8 +134,15 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
       {2, 20, RangeMap::kUnknownSize}
     });
 
-  // Repeat
+  // Overlap unknown size
   AddRange(2, 20, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, 20},
+      {2, 20, RangeMap::kUnknownSize}
+    });
+
+  // Overlap known size
+  AddRange(0, 10, RangeMap::kUnknownSize);
   AssertRangeMap({
       {1, 10, 20},
       {2, 20, RangeMap::kUnknownSize}
@@ -249,6 +256,40 @@ TEST_F(RangeMapTest, RangeCover) {
   AssertCover(false, 60, 70);
   AssertCover(false, 80, 81);
   AssertCover(false, 82, 100);
+
+  // Overlap all prev ranges
+  AddRange(4, 5, 95);
+  AssertRangeMap({
+      {1, 5, 55},
+      {2, 55, 60},
+      {4, 60, 70},
+      {3, 70, 80},
+      {4, 80, 81},
+      {3, 81, 82},
+      {4, 82, 100},
+    });
+  AssertCover(true, 5, 100);
+  AssertCover(false, 0, 5);
+  AssertCover(false, 100, 120);
+}
+
+TEST_F(RangeMapTest, RangeCoverUnknownSize) {
+  AddRange(1, 10, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, RangeMap::kUnknownSize}
+    });
+  AssertCover(true, 10, 50);
+  AssertCover(false, 0, 10);
+
+  AddRange(2, 20, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {1, 10, 20},
+      {2, 20, RangeMap::kUnknownSize}
+    });
+  AssertCover(true, 10, 20);
+  AssertCover(true, 20, 50);
+  AssertCover(true, 10, 50);
+  AssertCover(false, 0, 10);
 }
 
 TEST_F(RangeMapTest, GetType) {
@@ -277,7 +318,6 @@ TEST_F(RangeMapTest, GetType) {
   AssertGetType({3, 15, 20}, 15, 20);
   AssertGetType({2, 20, 30}, 20, 30);
   AssertGetType({3, 30, 50}, 30, 50);
-  return;
 }
 
 TEST_F(RangeMapTest, Gaps) {

@@ -14,7 +14,6 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
 void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
   // Can spawn only 1 range, maybe fix prev entry size
   auto it = GetContainingOrNext(addr);
-  // printf("Adding [%u, kUnknownSize) entry\n", addr);
   size_type base_beg = addr;
   size_type base_size = kUnknownSize;
 
@@ -23,11 +22,18 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
       auto next = std::next(it);
       if (IsEnd(next)) {
         // If prev is unknown size --> fix
+        if ((GetEntrySize(it) == kUnknownSize) &&
+            (GetEntryBegin(it) < base_beg)) {
           it->second.size = addr - it->first;
+        }
       } else {
         base_size = GetEntryBegin(next) - GetEntryEnd(it);
       }
-      base_beg = GetEntryEnd(it);
+      size_type it_end = GetEntryEnd(it);
+      if (it_end == kUnknownSize) {
+        return;
+      }
+      base_beg = it_end;
     } else {
       base_size = GetEntryBegin(it) - addr;
     }
@@ -94,28 +100,23 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   // TODO: strict check overflow
   CHECK(addr + size > addr);
   auto it = GetContainingOrNext(addr);
-  if (IsEnd(it)) {
-    return false;
-  }
-
-  if (IsEntryContains(it, addr)) {
-    CHECK(GetEntryEnd(it) > addr);
-    size_type cover = GetEntryEnd(it) - addr;
-    while (size > cover) {
-      ++it;
-      if (IsEnd(it)) {
-        return false;
-      } else {
-        if (IsEntryContains(it, addr + cover)) {
-          cover += GetEntrySize(it);
-        } else {
-          return false;
-        }
-      }
+  size_type cov_begin = addr;
+  size_type covered = 0;
+  // TODO: refactor
+  while (size > covered) {
+    if (IsEnd(it) || !IsEntryContains(it, addr + covered)) {
+      return false;
     }
-    return true;
+
+    if (GetEntrySize(it) == kUnknownSize) {
+      return true;
+    }
+
+    covered += (cov_begin - GetEntryEnd(it));
+    cov_begin = GetEntryEnd(it);
+    ++it;
   }
-  return false;
+  return true;
 }
 
 RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
