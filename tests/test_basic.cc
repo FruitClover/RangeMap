@@ -122,6 +122,36 @@ TEST_F(RangeMapTest, AddRangeMiddleInsert) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeRev) {
+  AddRange(0, 50, 10);
+  AssertRangeMap({
+      {0, 50, 60}
+    });
+
+  AddRange(1, 40, 5);
+  AssertRangeMap({
+      {1, 40, 45},
+      {0, 50, 60}
+    });
+
+  AddRange(2, 20, 10);
+  AssertRangeMap({
+      {2, 20, 30},
+      {1, 40, 45},
+      {0, 50, 60}
+    });
+
+  AddRange(3, 21, 41);
+  AssertRangeMap({
+      {2, 20, 30},
+      {3, 30, 40},
+      {1, 40, 45},
+      {3, 45, 50},
+      {0, 50, 60},
+      {3, 60, 62}
+    });
+}
+
 TEST_F(RangeMapTest, AddRangeUnknownSize) {
   AddRange(1, 10, RangeMap::kUnknownSize);
   AssertRangeMap({
