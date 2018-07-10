@@ -152,6 +152,35 @@ TEST_F(RangeMapTest, AddRangeRev) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeNearUnknown) {
+  const uint64_t un_size = RangeMap::kUnknownSize;
+
+  AddRange(0, un_size - 1, un_size);
+  AssertRangeMap({
+      {0, un_size - 1, un_size}
+    });
+
+  AddRange(1, un_size - 2, un_size);
+  AssertRangeMap({
+      {1, un_size - 2, un_size - 1},
+      {0, un_size - 1, un_size}
+    });
+
+  AddRange(2, un_size - 3, un_size);
+  AssertRangeMap({
+      {2, un_size - 3, un_size - 2},
+      {1, un_size - 2, un_size - 1},
+      {0, un_size - 1, un_size}
+    });
+
+  AddRange(4, un_size - 3, un_size);
+  AssertRangeMap({
+      {2, un_size - 3, un_size - 2},
+      {1, un_size - 2, un_size - 1},
+      {0, un_size - 1, un_size}
+    });
+}
+
 TEST_F(RangeMapTest, AddRangeUnknownSize) {
   AddRange(1, 10, RangeMap::kUnknownSize);
   AssertRangeMap({
