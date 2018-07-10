@@ -284,6 +284,27 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeUnknownSizeFix1) {
+  AddRange(0, 10, RangeMap::kUnknownSize);
+  AddRange(1, 20, RangeMap::kUnknownSize);
+  AddRange(2, 30, RangeMap::kUnknownSize);
+  AddRange(3, 40, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {0, 10, 20},
+      {1, 20, 30},
+      {2, 30, 40},
+      {3, 40, RangeMap::kUnknownSize}
+    });
+
+  AddRange(4, 20, 1000);
+  AssertRangeMap({
+      {0, 10, 20},
+      {1, 20, 30},
+      {2, 30, 40},
+      {3, 40, 1020}
+    });
+}
+
 TEST_F(RangeMapTest, AddRangeProcedural1) {
   const size_t count = 512;
   std::vector<TestEntry> entries;
@@ -462,12 +483,12 @@ TEST_F(RangeMapTest, Continious) {
     });
   AssertContinious(true);
 
-  AddRange(3, 30, 1000);
+  AddRange(4, 30, 1000);
   AssertRangeMap({
       {0, 10, 20},
       {2, 20, 30},
       {1, 30, 40},
-      {3, 40, 1000}
+      {3, 40, 1030}
     });
   AssertContinious(true);
 }

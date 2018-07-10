@@ -45,7 +45,6 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
 void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size) {
   auto it = GetContainingOrNext(addr);
 
-  // printf("Adding [%u, %u) entry\n", addr, addr + size);
   size_type base_beg = addr;
   size_type base_end = addr + size;
   CHECK(base_end > base_beg);
@@ -58,8 +57,7 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
       VerifyEntry(it);
       if (IsEntryContains(it, base_beg)) {
         if (GetEntryEnd(it) == kUnknownSize) {
-          // If prev is unknown size --> fix
-          it->second.size = addr - it->first;
+          it->second.size = base_end - base_beg;
         } else {
           base_beg = GetEntryEnd(it);
         }
