@@ -98,20 +98,16 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   // TODO: strict check overflow
   CHECK(addr + size > addr);
   auto it = GetContainingOrNext(addr);
-  size_type cov_begin = addr;
-  size_type covered = 0;
-  // TODO: refactor
-  while (size > covered) {
-    if (IsEnd(it) || !IsEntryContains(it, addr + covered)) {
+  size_type cov_end = addr + size;
+  while (cov_end > addr) {
+    if (IsEnd(it) || !IsEntryContains(it, addr)) {
       return false;
     }
 
     if (GetEntrySize(it) == kUnknownSize) {
       return true;
     }
-
-    covered += (cov_begin - GetEntryEnd(it));
-    cov_begin = GetEntryEnd(it);
+    addr = GetEntryEnd(it);
     ++it;
   }
   return true;
