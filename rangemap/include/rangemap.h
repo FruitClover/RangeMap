@@ -120,6 +120,9 @@ class RangeMap {
   Map map_;
 };
 
+// TODO: impl
+// TODO: Merge(vector RangeMap)
+
 }  // namespace rangemap
 
 #endif  // RANGEMAP_INCLUDE_H
