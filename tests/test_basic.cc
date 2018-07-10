@@ -64,6 +64,14 @@ TEST_F(RangeMapTest, AddRange) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeMerge) {
+  AddRange(1, 10, 10);
+  AddRange(1, 20, 10);
+  AssertRangeMap({
+      {1, 10, 30}
+    });
+}
+
 TEST_F(RangeMapTest, AddRangeMiddleInsert) {
   AddRange(1, 10, 30);
   AssertRangeMap({

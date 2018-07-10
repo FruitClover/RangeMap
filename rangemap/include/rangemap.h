@@ -110,6 +110,9 @@ class RangeMap {
   }
 
   template <class T>
+  void MaybeMergeEntry(T it);
+
+  template <class T>
   void VerifyEntry(T it) const;
 
   // Find first gap between start and end, return map_.end() if none
@@ -117,6 +120,7 @@ class RangeMap {
   T FindFirstGap(T start, T end) const;
 
   friend class RangeMapTest;
+  bool isMergeCommon_ = false;
   Map map_;
 };
 
