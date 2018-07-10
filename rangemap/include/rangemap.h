@@ -56,7 +56,7 @@ class RangeMap {
     // TODO: accept end to simplified other functions
     if (it->second.size == kUnknownSize) {
       auto next = std::next(it);
-      if (ItEnd(next)) {
+      if (IsEnd(next)) {
         return kUnknownSize;
       } else {
         return GetEntryBegin(next);

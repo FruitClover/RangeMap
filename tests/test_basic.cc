@@ -393,6 +393,57 @@ TEST_F(RangeMapTest, GetType) {
   AssertGetType({3, 30, 50}, 30, 50);
 }
 
+TEST_F(RangeMapTest, Continious) {
+  AddRange(0, 10, 10);
+  AssertRangeMap({
+      {0, 10, 20}
+    });
+  AssertContinious(true);
+
+  AddRange(1, 30, 10);
+  AssertRangeMap({
+      {0, 10, 20},
+      {1, 30, 40},
+    });
+  AssertContinious(false);
+
+  AddRange(2, 20, 10);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+    });
+  AssertContinious(true);
+
+  AddRange(3, 40, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+      {3, 40, RangeMap::kUnknownSize}
+    });
+  AssertContinious(false);
+
+  AddRange(3, 30, 10);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+      {3, 40, RangeMap::kUnknownSize}
+    });
+  AssertContinious(true);
+
+  AddRange(3, 30, 1000);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+      {3, 40, 1000}
+    });
+  AssertContinious(true);
+}
+
+
 TEST_F(RangeMapTest, Gaps) {
   // TODO: test gaps finding
   return;

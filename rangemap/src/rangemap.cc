@@ -119,6 +119,21 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
   return true;
 }
 
+bool RangeMap::IsContinious() const {
+  size_type prev_end = GetEntryBegin(map_.begin());
+  for (auto it = map_.begin(); it != map_.end(); ++it) {
+    if (GetEntrySize(it) == kUnknownSize) {
+      return false;
+    }
+    size_type new_beg = GetEntryBegin(it);
+    if (new_beg != prev_end) {
+      return false;
+    }
+    prev_end = GetEntryEnd(it);
+  }
+  return true;
+}
+
 RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
     size_type addr) const {
   // X      X      X    X       X    X        X      X    X       X
