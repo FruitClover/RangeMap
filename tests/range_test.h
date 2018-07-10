@@ -62,6 +62,11 @@ protected:
       // TODO: check all other outputs
     }
   }
+  void AssertContinious(bool is_continious) {
+    return;
+    AssertConsistency();
+    EXPECT_EQ(is_continious, range_map_.IsContinious());
+  }
 
   RangeMap range_map_;
 };
