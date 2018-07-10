@@ -247,6 +247,20 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeProcedural1) {
+  const size_t count = 512;
+  std::vector<TestEntry> entries;
+  entries.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    AddRange(i, i, 1);
+    entries.emplace_back(i, i, i+1);
+    AssertRangeMap(entries);
+  }
+
+   AssertCover(true, 0, count);
+   AssertCover(false, count, count * 2);
+}
+
 TEST_F(RangeMapTest, RangeCover) {
   // [5, 55]
   AddRange(1, 5, 50);
