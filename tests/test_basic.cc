@@ -70,6 +70,65 @@ TEST_F(RangeMapTest, AddRangeMerge) {
   AssertRangeMap({
       {1, 10, 30}
     });
+
+  AddRange(2, 40, 10);
+  AssertRangeMap({
+      {1, 10, 30},
+      {2, 40, 50}
+    });
+
+  AddRange(2, 35, 5);
+  AssertRangeMap({
+      {1, 10, 30},
+      {2, 35, 50}
+    });
+
+  AddRange(1, 32, 3);
+  AssertRangeMap({
+      {1, 10, 30},
+      {1, 32, 35},
+      {2, 35, 50}
+    });
+
+  AddRange(1, 30, 2);
+  AssertRangeMap({
+      {1, 10, 35},
+      {2, 35, 50}
+    });
+
+  AddRange(1, 5, 55);
+  AssertRangeMap({
+      {1, 5, 35},
+      {2, 35, 50},
+      {1, 50, 60}
+    });
+
+  AddRange(1, 5, 55);
+  AssertRangeMap({
+      {1, 5, 35},
+      {2, 35, 50},
+      {1, 50, 60}
+    });
+
+  AddRange(3, 65, 5);
+  AddRange(3, 75, 5);
+  AddRange(3, 85, 5);
+  AssertRangeMap({
+      {1, 5, 35},
+      {2, 35, 50},
+      {1, 50, 60},
+      {3, 65, 70},
+      {3, 75, 80},
+      {3, 85, 90}
+    });
+
+  AddRange(3, 50, 50);
+  AssertRangeMap({
+      {1, 5, 35},
+      {2, 35, 50},
+      {1, 50, 60},
+      {3, 60, 100}
+    });
 }
 
 TEST_F(RangeMapTest, AddRangeMiddleInsert) {
