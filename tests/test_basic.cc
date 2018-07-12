@@ -373,7 +373,7 @@ TEST_F(RangeMapTest, AddRangeUnknownSizeFix1) {
 }
 
 TEST_F(RangeMapTest, AddRangeProcedural1) {
-  const size_t count = 512;
+  const size_t count = 128;
   std::vector<TestEntry> entries;
   entries.reserve(count);
   for (size_t i = 0; i < count; ++i) {
@@ -388,7 +388,7 @@ TEST_F(RangeMapTest, AddRangeProcedural1) {
 }
 
 TEST_F(RangeMapTest, AddRangeProcedural2) {
-  const size_t count = 512;
+  const size_t count = 128;
   std::vector<TestEntry> entries;
   entries.reserve(count);
   for (size_t i = 0; i < count; ++i) {
