@@ -34,6 +34,9 @@ class RangeMap {
  private:
   typedef std::map<size_type, Entry> Map;
 
+  template <class T>
+  void AddEntry(T it, size_type type, size_type addr, size_type size);
+
   void AddRangeUnknownSize(size_type type, size_type addr);
   void AddRangeFixedSize(size_type type, size_type addr, size_type size);
 
