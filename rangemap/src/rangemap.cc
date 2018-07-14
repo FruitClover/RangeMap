@@ -11,6 +11,25 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
   }
 }
 
+template <class T>
+void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
+  if (size == 0)
+    return;
+
+  if (size != kUnknownSize) {
+    CHECK(addr + size >= addr);
+  }
+  // TODO: strict add before it
+  // if (!IsEnd(it)) {
+  // printf("Add it: beg = %llu, size = %llu\n",  GetEntryBegin(it), GetEntrySize(it));
+  // // TODO: overflow
+  //   CHECK(addr <= GetEntryBegin(it));
+  // }
+
+  auto added = map_.emplace_hint(it, addr, Entry(type, size));
+  MaybeMergeEntry(added);
+}
+
 void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
   // Can spawn only 1 range, maybe fix prev entry size
   auto it = GetContainingOrNext(addr);
@@ -39,8 +58,7 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
     }
   }
 
-  auto added = map_.emplace_hint(it, base_beg, Entry(type, base_size));
-  MaybeMergeEntry(added);
+  AddEntry(it, type, base_beg, base_size);
 }
 
 void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size) {
@@ -52,8 +70,7 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
   while (true) {
     // TODO: sanity check for overflow?
     if (IsEnd(it)) {
-      auto added = map_.emplace_hint(it, base_beg, Entry(type, base_end - base_beg));
-      MaybeMergeEntry(added);
+      AddEntry(it, type, base_beg, base_end - base_beg);
       break;
     } else {
       VerifyEntry(it);
@@ -66,8 +83,7 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
       } else {
         size_type next_beg = GetEntryBegin(it);
         if (base_end > next_beg) {
-          auto added = map_.emplace_hint(it, base_beg, Entry(type, next_beg - base_beg));
-          MaybeMergeEntry(added);
+          AddEntry(it, type, base_beg, next_beg - base_beg);
           base_beg = GetEntryEnd(it);
         }
       }
