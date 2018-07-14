@@ -169,7 +169,7 @@ RangeMap::Map::const_iterator RangeMap::GetContainingOrNext(
     if (IsEntryContains(prev, addr)) {
       return prev;
     } else {
-      return std::next(prev);
+      return it;
     }
   } else {
     return it;
@@ -183,7 +183,7 @@ RangeMap::Map::iterator RangeMap::GetContainingOrNext(size_type addr) {
     if (IsEntryContains(prev, addr)) {
       return prev;
     } else {
-      return std::next(prev);
+      return it;
     }
   } else {
     return it;
