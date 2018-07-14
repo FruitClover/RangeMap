@@ -63,7 +63,6 @@ protected:
     }
   }
   void AssertContinious(bool is_continious) {
-    return;
     AssertConsistency();
     EXPECT_EQ(is_continious, range_map_.IsContinious());
   }

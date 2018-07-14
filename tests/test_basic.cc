@@ -548,7 +548,7 @@ TEST_F(RangeMapTest, Continious) {
       {1, 30, 40},
       {3, 40, RangeMap::kUnknownSize}
     });
-  AssertContinious(true);
+  AssertContinious(false);
 
   AddRange(4, 30, 1000);
   AssertRangeMap({
