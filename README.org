@@ -1,0 +1,27 @@
+* RangeMap
+Stucture for mapping address ranges into map.
+
+** Example
+
+- Add ranges:
+#+BEGIN_SRC c++
+RangeMap rm;
+/* rm.AddEntry(type, addr, size) */
+rm.AddEntry(0, 10, 10);
+rm.AddEntry(1, 40, RangeMap::kUnknownSize);
+#+END_SRC
+#+BEGIN_EXAMPLE
+[0][10 ... 20)
+[1][40 ......)
+#+END_EXAMPLE
+
+- Cover Range:
+#+BEGIN_SRC c++
+rm.AddEntry(2, 0, 50);
+#+END_SRC
+#+BEGIN_EXAMPLE
+[2][0  ... 10)
+[0][10 ... 20)
+[2][20 ... 40)
+[1][40 ... 50)
+#+END_EXAMPLE
