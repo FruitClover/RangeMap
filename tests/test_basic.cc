@@ -373,6 +373,18 @@ TEST_F(RangeMapTest, AddRangeUnknownSizeFix1) {
     });
 }
 
+TEST_F(RangeMapTest, AddRangeNullSize) {
+  AddRange(0, 10, 0);
+  AssertRangeMap({{}});
+
+  AddRange(1, 10, 5);
+  AddRange(0, 15, 0);
+  AddRange(0, 10, 0);
+  AssertRangeMap({
+      {1, 10, 15}
+    });
+}
+
 TEST_F(RangeMapTest, AddRangeProcedural1) {
   const size_t count = 128;
   std::vector<TestEntry> entries;

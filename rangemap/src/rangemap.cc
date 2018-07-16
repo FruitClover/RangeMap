@@ -4,6 +4,9 @@ namespace rangemap {
 
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
   // TODO: Add option to merge regions for the same type
+  if (size == 0) {
+    return;
+  }
   if (IsUnknownSize(size)) {
     AddRangeUnknownSize(type, addr);
   } else {
