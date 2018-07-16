@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 #ifndef RANGEMAP_INCLUDE_H
 #define RANGEMAP_INCLUDE_H
 
