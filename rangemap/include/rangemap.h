@@ -27,10 +27,10 @@ class RangeMap {
   // If addr belongs to some entry, fill type and size for this entry
   bool TryGetEntry(size_type addr, range_type *type, size_type *size) const;
 
-  // Return true is there is no gaps for [addr, addr + size]
+  // Return true if there are no gaps for [addr, addr + size]
   bool IsRangeCovered(size_type addr, size_type size) const;
 
-  // True is there are no gaps in mapping
+  // True if there are no gaps in mapping
   bool IsContinious() const;
 
  private:
