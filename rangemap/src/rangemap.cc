@@ -14,6 +14,14 @@ void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
   }
 }
 
+void RangeMap::AddRangeRel(range_type type, size_type addr, size_type size,
+                           size_type rel_addr) {
+  CHECK(rel_addr != kNoRelative);
+  // TODO: check overflow
+  CHECK(rel_addr + addr >= addr);
+  AddRange(type, addr + rel_addr, size);
+}
+
 template <class T>
 void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
   if (size == 0)

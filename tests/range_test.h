@@ -11,14 +11,21 @@ class RangeMapTest : public ::testing::Test {
 protected:
   struct TestEntry {
     TestEntry(size_t type_, uint64_t beg_, uint64_t end_)
-        : type(type_), beg(beg_), end(end_) {}
+        : type(type_), beg(beg_), end(end_), rel_addr(RangeMap::kNoRelative) {}
+    TestEntry(size_t type_, uint64_t beg_, uint64_t end_, uint64_t rel_addr_)
+        : type(type_), beg(beg_), end(end_), rel_addr(rel_addr_) {}
     size_t type;
     uint64_t beg;
     uint64_t end;
+    uint64_t rel_addr;
   };
 
   void AddRange(int ind, uint64_t addr, uint64_t size) {
     range_map_.AddRange(ind, addr, size);
+  }
+
+  void AddRangeRel(int ind, uint64_t addr, uint64_t size, uint64_t rel_addr) {
+    range_map_.AddRangeRel(ind, addr, size, rel_addr);
   }
 
   void AssertConsistency() {
@@ -38,6 +45,7 @@ protected:
       EXPECT_EQ(ranges[i].beg, iter->first);
       EXPECT_EQ(ranges[i].end, range_map_.GetEnd(iter));
       EXPECT_EQ(ranges[i].type, iter->second.type);
+      EXPECT_EQ(ranges[i].rel_addr, iter->second.rel_addr);
     }
   }
 

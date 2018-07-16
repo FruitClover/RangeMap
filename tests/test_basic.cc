@@ -420,6 +420,53 @@ TEST_F(RangeMapTest, AddRangeProcedural3) {
 
 }
 
+TEST_F(RangeMapTest, AddRangeRelative) {
+  AddRangeRel(0, 0, 10, 10);
+  AssertRangeMap({
+      {0, 10, 20}
+    });
+
+  AddRangeRel(1, 5, 10, 20);
+  AssertRangeMap({
+       {0, 10, 20},
+       {1, 25, 35},
+    });
+
+  AddRangeRel(2, 5, 10, 0);
+  AssertRangeMap({
+       {2, 5, 10},
+       {0, 10, 20},
+       {1, 25, 35}
+    });
+
+  AddRangeRel(3, 0, 10, 35);
+  AssertRangeMap({
+       {2, 5, 10},
+       {0, 10, 20},
+       {1, 25, 35},
+       {3, 35, 45}
+    });
+
+  AddRangeRel(4, 0, 0, 20);
+  AssertRangeMap({
+       {2, 5, 10},
+       {0, 10, 20},
+       {1, 25, 35},
+       {3, 35, 45}
+    });
+
+  AddRangeRel(5, 0, 40, 20);
+  AssertRangeMap({
+       {2, 5, 10},
+       {0, 10, 20},
+       {5, 20, 25},
+       {1, 25, 35},
+       {3, 35, 45},
+       {5, 45, 60}
+    });
+
+}
+
 TEST_F(RangeMapTest, RangeCover) {
   // [5, 55]
   AddRange(1, 5, 50);

@@ -14,12 +14,17 @@ class RangeMap {
   typedef uint64_t size_type;
   typedef size_t range_type;
   static const size_type kUnknownSize = std::numeric_limits<size_type>::max();
+  static const size_type kNoRelative = std::numeric_limits<size_type>::max();
 
   struct Entry {
-    Entry(range_type type_, size_type size_) : type(type_), size(size_) {}
+    Entry(range_type type_, size_type size_)
+        : type(type_), size(size_), rel_addr(kNoRelative) {}
+    Entry(range_type type_, size_type size_, size_type rel_addr_)
+        : type(type_), size(size_), rel_addr(rel_addr_) {}
     range_type type;
     size_type size;
     size_type rel_addr;
+    bool IsRelative() const { return rel_addr == kNoRelative; }
   };
 
   // Insert new entry [addr, addr + size]
