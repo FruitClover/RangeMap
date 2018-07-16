@@ -25,7 +25,7 @@ protected:
     uint64_t prev_end = 0;
     for (auto it = range_map_.map_.begin(); it != range_map_.map_.end(); ++it) {
       ASSERT_GE(it->first, prev_end);
-      prev_end = range_map_.GetEntryEnd(it);
+      prev_end = range_map_.GetEnd(it);
     }
   }
 
@@ -36,7 +36,7 @@ protected:
     size_t i = 0;
     for (; iter != range_map_.map_.end() && i < ranges.size(); ++iter, ++i) {
       EXPECT_EQ(ranges[i].beg, iter->first);
-      EXPECT_EQ(ranges[i].end, range_map_.GetEntryEnd(iter));
+      EXPECT_EQ(ranges[i].end, range_map_.GetEnd(iter));
       EXPECT_EQ(ranges[i].type, iter->second.type);
     }
   }

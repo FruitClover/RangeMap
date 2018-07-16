@@ -42,7 +42,7 @@ class RangeMap {
 
   // If size is unknown, return kUnknownSize;
   template <class T>
-  size_type GetEntryEnd(T it) const {
+  size_type GetEnd(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     if (it->second.size == kUnknownSize) {
@@ -55,14 +55,14 @@ class RangeMap {
   }
 
   template <class T>
-  size_type GetEntryEndStrict(T it) const {
+  size_type GetEndStrict(T it) const {
     // TODO: accept end to simplified other functions
     if (it->second.size == kUnknownSize) {
       auto next = std::next(it);
       if (IsEnd(next)) {
         return kUnknownSize;
       } else {
-        return GetEntryBegin(next);
+        return GetBegin(next);
       }
     } else {
       size_type end = it->first + it->second.size;
@@ -73,14 +73,14 @@ class RangeMap {
   }
 
   template <class T>
-  size_type GetEntryBegin(T it) const {
+  size_type GetBegin(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     return it->first;
   }
 
   template <class T>
-  size_type GetEntrySize(T it) const {
+  size_type GetSize(T it) const {
     // TODO: accept end to simplified other functions
     CHECK(!IsEnd(it));
     return it->second.size;
@@ -110,6 +110,15 @@ class RangeMap {
   template <class T>
   bool IsBegin(T it) const {
     return (it == map_.begin());
+  }
+
+  template <class T>
+  bool IsUnknownSize(T it) const {
+    return GetSize(it) == kUnknownSize;
+  }
+
+  bool IsUnknownSize(size_type size) const {
+    return size == kUnknownSize;
   }
 
   template <class T>

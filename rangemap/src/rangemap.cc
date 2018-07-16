@@ -4,7 +4,7 @@ namespace rangemap {
 
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
   // TODO: Add option to merge regions for the same type
-  if (size == kUnknownSize) {
+  if (IsUnknownSize(size)) {
     AddRangeUnknownSize(type, addr);
   } else {
     AddRangeFixedSize(type, addr, size);
@@ -16,14 +16,15 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
   if (size == 0)
     return;
 
-  if (size != kUnknownSize) {
+  if (!IsUnknownSize(size)) {
     CHECK(addr + size >= addr);
   }
   // TODO: strict add before it
   // if (!IsEnd(it)) {
-  // printf("Add it: beg = %llu, size = %llu\n",  GetEntryBegin(it), GetEntrySize(it));
+  // printf("Add it: beg = %llu, size = %llu\n",  GetBegin(it),
+  // GetSize(it));
   // // TODO: overflow
-  //   CHECK(addr <= GetEntryBegin(it));
+  //   CHECK(addr <= GetBegin(it));
   // }
 
   auto added = map_.emplace_hint(it, addr, Entry(type, size));
@@ -41,20 +42,19 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
       auto next = std::next(it);
       if (IsEnd(next)) {
         // If prev is unknown size --> fix
-        if ((GetEntrySize(it) == kUnknownSize) &&
-            (GetEntryBegin(it) < base_beg)) {
+        if ((IsUnknownSize(it)) && (GetBegin(it) < base_beg)) {
           it->second.size = addr - it->first;
         }
       } else {
-        base_size = GetEntryBegin(next) - GetEntryEnd(it);
+        base_size = GetBegin(next) - GetEnd(it);
       }
-      size_type it_end = GetEntryEnd(it);
-      if (it_end == kUnknownSize) {
-        return;
+      size_type it_end = GetEnd(it);
+      if (IsUnknownSize(it_end)) {
+         return;
       }
       base_beg = it_end;
     } else {
-      base_size = GetEntryBegin(it) - addr;
+      base_size = GetBegin(it) - addr;
     }
   }
 
@@ -75,16 +75,16 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
     } else {
       VerifyEntry(it);
       if (IsEntryContains(it, base_beg)) {
-        if (GetEntryEnd(it) == kUnknownSize) {
+        if (IsUnknownSize(GetEnd(it))) {
           it->second.size = base_end - base_beg;
         } else {
-          base_beg = GetEntryEnd(it);
+          base_beg = GetEnd(it);
         }
       } else {
-        size_type next_beg = GetEntryBegin(it);
+        size_type next_beg = GetBegin(it);
         if (base_end > next_beg) {
           AddEntry(it, type, base_beg, next_beg - base_beg);
-          base_beg = GetEntryEnd(it);
+          base_beg = GetEnd(it);
         }
       }
     }
@@ -123,26 +123,26 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
       return false;
     }
 
-    if (GetEntrySize(it) == kUnknownSize) {
+    if (IsUnknownSize(it)) {
       return true;
     }
-    addr = GetEntryEnd(it);
+    addr = GetEnd(it);
     ++it;
   }
   return true;
 }
 
 bool RangeMap::IsContinious() const {
-  size_type prev_end = GetEntryBegin(map_.begin());
+  size_type prev_end = GetBegin(map_.begin());
   for (auto it = map_.begin(); it != map_.end(); ++it) {
-    if (GetEntrySize(it) == kUnknownSize) {
+    if (IsUnknownSize(it)) {
       return false;
     }
-    size_type new_beg = GetEntryBegin(it);
+    size_type new_beg = GetBegin(it);
     if (new_beg != prev_end) {
       return false;
     }
-    prev_end = GetEntryEnd(it);
+    prev_end = GetEnd(it);
   }
   return true;
 }
@@ -205,7 +205,7 @@ RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
 
 template <class T>
 bool RangeMap::IsEntryContains(T it, size_type addr) const {
-  return ((addr >= GetEntryBegin(it)) && (GetEntryEnd(it) > addr));
+  return ((addr >= GetBegin(it)) && (GetEnd(it) > addr));
 }
 
 template <class T>
@@ -216,10 +216,10 @@ void RangeMap::MaybeMergeEntry(T it) {
   if (!IsBegin(it)) {
     auto prev = std::prev(it);
     if ((prev->second.type == it->second.type) &&
-        (GetEntryEnd(prev) == GetEntryBegin(it))) {
+        (GetEnd(prev) == GetBegin(it))) {
 
-        size_type add_size = GetEntrySize(it);
-        if (add_size == kUnknownSize) {
+        size_type add_size = GetSize(it);
+        if (IsUnknownSize(add_size)) {
           prev->second.size = kUnknownSize;
         } else {
           // TODO: check overflow strict
@@ -235,9 +235,9 @@ void RangeMap::MaybeMergeEntry(T it) {
     auto next = std::next(it);
     if (!IsEnd(next)) {
       if ((next->second.type == it->second.type) &&
-          (GetEntryEnd(it) == GetEntryBegin(next))) {
-        size_type add_size = GetEntrySize(next);
-        if (add_size == kUnknownSize) {
+          (GetEnd(it) == GetBegin(next))) {
+        size_type add_size = GetSize(next);
+        if (IsUnknownSize(add_size)) {
           it->second.size = kUnknownSize;
         } else {
           // TODO: check overflow strict
@@ -254,13 +254,13 @@ void RangeMap::MaybeMergeEntry(T it) {
 template <class T>
 void RangeMap::VerifyEntry(T it) const {
   // TODO: strict check overflow
-  if (GetEntrySize(it) != kUnknownSize) {
-    CHECK(GetEntryBegin(it) + GetEntrySize(it) > GetEntryBegin(it));
+  if (!IsUnknownSize(it)) {
+    CHECK(GetBegin(it) + GetSize(it) > GetBegin(it));
   }
   // Pos in mappings
   CHECK(IsEnd(std::next(it)) ||
-        GetEntryEnd(it) <= GetEntryBegin(std::next(it)));
-  CHECK(IsBegin(it) || GetEntryEnd(std::prev(it)) <= GetEntryBegin(it));
+        GetEnd(it) <= GetBegin(std::next(it)));
+  CHECK(IsBegin(it) || GetEnd(std::prev(it)) <= GetBegin(it));
 }
 
 } // namespace rangemap
