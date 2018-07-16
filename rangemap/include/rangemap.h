@@ -19,10 +19,14 @@ class RangeMap {
     Entry(range_type type_, size_type size_) : type(type_), size(size_) {}
     range_type type;
     size_type size;
+    size_type rel_addr;
   };
 
   // Insert new entry [addr, addr + size]
   void AddRange(range_type type, size_type addr, size_type size);
+
+  // Insert new entry [addr, addr + size] relative to rel_addr
+  void AddRangeRel(range_type type, size_type addr, size_type size, size_type rel_addr);
 
   // If addr belongs to some entry, fill type and size for this entry
   bool TryGetEntry(size_type addr, range_type *type, size_type *size) const;
