@@ -58,7 +58,8 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
     }
   }
 
-  map_.emplace_hint(it, addr, Entry(type, size));
+  if (!merged_next)
+    map_.emplace_hint(it, addr, Entry(type, size));
 }
 
 void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
