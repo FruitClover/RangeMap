@@ -30,13 +30,10 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
   if (!IsUnknownSize(size)) {
     CHECK(addr + size >= addr);
   }
-  // TODO: strict add before it
-  // if (!IsEnd(it)) {
-  // printf("Add it: beg = %llu, size = %llu\n",  GetBegin(it),
-  // GetSize(it));
-  // // TODO: overflow
-  //   CHECK(addr <= GetBegin(it));
-  // }
+
+  if (!IsEnd(it)) {
+    CHECK(GetBegin(it) > addr);
+  }
 
   auto added = map_.emplace_hint(it, addr, Entry(type, size));
   MaybeMergeEntry(added);
@@ -64,6 +61,7 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
          return;
       }
       base_beg = it_end;
+      ++it;
     } else {
       base_size = GetBegin(it) - addr;
     }
