@@ -63,9 +63,7 @@ TEST_F(RangeMapTest, AddRange) {
       {4, 50, 100}
     });
 }
-
-TEST_F(RangeMapTest, AddRangeMerge) {
-  return;
+TEST_F(RangeMapTest, AddRangeMergePrev) {
   AddRange(1, 10, 10);
   AddRange(1, 20, 10);
   AssertRangeMap({
@@ -78,57 +76,76 @@ TEST_F(RangeMapTest, AddRangeMerge) {
       {2, 40, 50}
     });
 
-  AddRange(2, 35, 5);
+  AddRange(2, 50, 50);
   AssertRangeMap({
       {1, 10, 30},
-      {2, 35, 50}
+      {2, 40, 100}
     });
 
-  AddRange(1, 32, 3);
+  AddRange(1, 30, 9);
   AssertRangeMap({
-      {1, 10, 30},
-      {1, 32, 35},
-      {2, 35, 50}
+      {1, 10, 39},
+      {2, 40, 100}
     });
 
-  AddRange(1, 30, 2);
+  AddRange(1, 39, 1);
   AssertRangeMap({
-      {1, 10, 35},
-      {2, 35, 50}
+      {1, 10, 40},
+      {2, 40, 100}
+    });
+}
+
+TEST_F(RangeMapTest, AddRangeMergeNext) {
+  AddRange(1, 80, 10);
+  AddRange(1, 70, 10);
+  AssertRangeMap({
+      {1, 70, 90}
     });
 
-  AddRange(1, 5, 55);
+  AddRange(2, 60, 5);
   AssertRangeMap({
-      {1, 5, 35},
-      {2, 35, 50},
+      {2, 60, 65},
+      {1, 70, 90}
+    });
+
+  AddRange(1, 65, 5);
+  AssertRangeMap({
+      {2, 60, 65},
+      {1, 65, 90}
+    });
+
+  AddRange(1, 50, 10);
+  AssertRangeMap({
+      {1, 50, 60},
+      {2, 60, 65},
+      {1, 65, 90}
+    });
+
+  AddRange(1, 0, 50);
+  AssertRangeMap({
+      {1, 0, 60},
+      {2, 60, 65},
+      {1, 65, 90}
+    });
+}
+
+TEST_F(RangeMapTest, AddRangeMerge) {
+  AddRange(1, 50, 10);
+  AddRange(1, 30, 10);
+  AssertRangeMap({
+      {1, 30, 40},
       {1, 50, 60}
     });
 
-  AddRange(1, 5, 55);
+  AddRange(1, 40, 10);
   AssertRangeMap({
-      {1, 5, 35},
-      {2, 35, 50},
-      {1, 50, 60}
+      {1, 30, 60}
     });
 
-  AddRange(3, 65, 5);
-  AddRange(3, 75, 5);
-  AddRange(3, 85, 5);
+  AddRange(1, 90, 10);
   AssertRangeMap({
-      {1, 5, 35},
-      {2, 35, 50},
-      {1, 50, 60},
-      {3, 65, 70},
-      {3, 75, 80},
-      {3, 85, 90}
-    });
-
-  AddRange(3, 50, 50);
-  AssertRangeMap({
-      {1, 5, 35},
-      {2, 35, 50},
-      {1, 50, 60},
-      {3, 60, 100}
+      {1, 30, 60},
+      {1, 90, 100}
     });
 }
 
@@ -339,14 +356,14 @@ TEST_F(RangeMapTest, AddRangeUnknownSize) {
       {5, 100, 150}
     });
 
-  AddRange(6, 60, RangeMap::kUnknownSize);
+  AddRange(7, 60, RangeMap::kUnknownSize);
   AssertRangeMap({
       {2, 0, 10},
       {1, 10, 20},
       {2, 20, 40},
       {3, 40, 50},
       {4, 50, 60},
-      {6, 60, 90},
+      {7, 60, 90},
       {6, 90, 100},
       {5, 100, 150}
     });
@@ -616,6 +633,28 @@ TEST_F(RangeMapTest, Continious) {
       {2, 20, 30},
       {1, 30, 40},
       {3, 40, 1030}
+    });
+  AssertContinious(true);
+
+  return;
+  AddRange(4, 1030, RangeMap::kUnknownSize);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+      {3, 40, 1030},
+      {4, 1030, RangeMap::kUnknownSize}
+    });
+  AssertContinious(false);
+
+  AddRange(5, 1035, 1);
+  AssertRangeMap({
+      {0, 10, 20},
+      {2, 20, 30},
+      {1, 30, 40},
+      {3, 40, 1030},
+      {4, 1030, 1035},
+      {5, 1035, 1036}
     });
   AssertContinious(true);
 }
