@@ -3,7 +3,6 @@
 namespace rangemap {
 
 void RangeMap::AddRange(range_type type, size_type addr, size_type size) {
-  // TODO: Add option to merge regions for the same type
   if (size == 0) {
     return;
   }
@@ -31,8 +30,32 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
     CHECK(addr + size >= addr);
   }
 
+  bool merged_next = false;
   if (!IsEnd(it)) {
     CHECK(GetBegin(it) > addr);
+    // Merge into next entry
+    if ((type == it->second.type) && (GetBegin(it) == addr + size)) {
+      it->second.size += size;
+      auto extr = map_.extract(it);
+      extr.key() = addr;
+      map_.insert(std::move(extr));
+      merged_next = true;
+    }
+  }
+
+  // Merge into prev entry
+  if (!IsBegin(it)) {
+    auto prev = std::prev(it);
+    if ((type == prev->second.type) && (GetEnd(prev) == addr)) {
+      if (merged_next) {
+        // Collapse with the next region
+        prev->second.size += GetSize(it);
+        map_.erase(it);
+      } else {
+        prev->second.size += size;
+      }
+      return;
+    }
   }
 
   map_.emplace_hint(it, addr, Entry(type, size));

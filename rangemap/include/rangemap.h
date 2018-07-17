@@ -143,12 +143,8 @@ class RangeMap {
   T FindFirstGap(T start, T end) const;
 
   friend class RangeMapTest;
-  bool isMergeCommon_ = false;
   Map map_;
 };
-
-// TODO: impl
-// TODO: Merge(vector RangeMap)
 
 }  // namespace rangemap
 
