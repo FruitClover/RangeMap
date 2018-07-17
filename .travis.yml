@@ -14,9 +14,9 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq g++-6
+  - sudo apt-get install -qq g++-8
   - sudo apt-get install -qq --yes --force-yes binutils
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 
 script:
   - mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DRANGEMAP_ENABLE_ASAN=OFF -DRANGEMAP_ENABLE_UBSAN=OFF && make -j4 && make test

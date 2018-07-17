@@ -36,6 +36,7 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
     // Merge into next entry
     if ((type == it->second.type) && (GetBegin(it) == addr + size)) {
       it->second.size += size;
+      // C++17 func
       auto extr = map_.extract(it);
       extr.key() = addr;
       map_.insert(std::move(extr));
