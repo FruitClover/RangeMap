@@ -91,17 +91,20 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
         }
       } else {
         size_type next_beg = GetBegin(it);
-        if (base_end >= next_beg) {
+        if (base_end > next_beg) {
           AddEntry(it, type, base_beg, next_beg - base_beg);
           base_beg = GetEnd(it);
+        } else {
+          AddEntry(it, type, base_beg, base_end - base_beg);
+          return;
         }
       }
+    ++it;
     }
 
     if (base_beg >= base_end) {
       break;
     }
-    ++it;
   }
 }
 
