@@ -433,8 +433,17 @@ TEST_F(RangeMapTest, AddRangeProcedural2) {
   AssertCover(true, count, count + 20);
 }
 
-TEST_F(RangeMapTest, AddRangeProcedural3) {
-
+TEST_F(RangeMapTest, AddRangeProceduralMergePrev) {
+  const size_t count = 128;
+  for (size_t i = 0; i < count; ++i) {
+    AddRange(0, i, 1);
+    AssertContinious(true);
+  }
+  AssertRangeMap({
+      {0, 0, count}
+    });
+  AssertCover(true, 0, count);
+  AssertCover(false, count, count * 2);
 }
 
 TEST_F(RangeMapTest, AddRangeRelative) {
