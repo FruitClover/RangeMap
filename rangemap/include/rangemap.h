@@ -46,6 +46,9 @@ class RangeMap {
   typedef std::map<size_type, Entry> Map;
 
   template <class T>
+  bool MaybeMergeEntry(T it, size_type type, size_type addr, size_type size);
+
+  template <class T>
   void AddEntry(T it, size_type type, size_type addr, size_type size);
 
   void AddRangeUnknownSize(size_type type, size_type addr);
@@ -109,6 +112,19 @@ class RangeMap {
     CHECK(!IsEnd(it));
     CHECK(!IsUnknownSize(added));
     it->second.size += added;
+  }
+
+  template <class T>
+  void SetAddress(T it, size_type new_addr) {
+    // C++17 func
+    CHECK(!IsEnd(it));
+    CHECK(!IsUnknownSize(new_addr));
+    if (GetBegin(it) == new_addr) {
+      return;
+    }
+    auto extr = map_.extract(it);
+    extr.key() = new_addr;
+    map_.insert(std::move(extr));
   }
 
   // Get entry that contains addr or the next one

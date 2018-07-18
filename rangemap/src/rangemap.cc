@@ -22,6 +22,36 @@ void RangeMap::AddRangeRel(range_type type, size_type addr, size_type size,
 }
 
 template <class T>
+bool RangeMap::MaybeMergeEntry(T it, size_type type, size_type addr,
+                               size_type size) {
+  bool is_merged = false;
+
+  if (!IsEnd(it)) {
+    // Merge into next entry
+    if ((type == GetType(it)) && (GetBegin(it) == addr + size)) {
+      AddSize(it, size);
+      SetAddress(it, addr);
+      is_merged = true;
+    }
+  }
+
+  // Merge into prev entry
+  if (!IsBegin(it)) {
+    auto prev = std::prev(it);
+    if ((type == GetType(prev)) && (GetEnd(prev) == addr)) {
+      // Maybe collapse with the next region
+      AddSize(prev, is_merged ? GetSize(it) : size);
+      if (is_merged) {
+        map_.erase(it);
+      }
+      is_merged = true;
+    }
+  }
+
+  return is_merged;
+}
+
+template <class T>
 void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
   if (size == 0)
     return;
@@ -30,36 +60,11 @@ void RangeMap::AddEntry(T it, size_type type, size_type addr, size_type size) {
     CHECK(addr + size >= addr);
   }
 
-  bool merged_next = false;
   if (!IsEnd(it)) {
     CHECK(GetBegin(it) > addr);
-    // Merge into next entry
-    if ((type == it->second.type) && (GetBegin(it) == addr + size)) {
-      it->second.size += size;
-      // C++17 func
-      auto extr = map_.extract(it);
-      extr.key() = addr;
-      map_.insert(std::move(extr));
-      merged_next = true;
-    }
   }
 
-  // Merge into prev entry
-  if (!IsBegin(it)) {
-    auto prev = std::prev(it);
-    if ((type == prev->second.type) && (GetEnd(prev) == addr)) {
-      if (merged_next) {
-        // Collapse with the next region
-        prev->second.size += GetSize(it);
-        map_.erase(it);
-      } else {
-        prev->second.size += size;
-      }
-      return;
-    }
-  }
-
-  if (!merged_next)
+  if (!MaybeMergeEntry(it, type, addr, size))
     map_.emplace_hint(it, addr, Entry(type, size));
 }
 
