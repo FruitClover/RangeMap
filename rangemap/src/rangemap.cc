@@ -176,11 +176,7 @@ bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
 bool RangeMap::IsContinious() const {
   size_type prev_end = GetBegin(map_.begin());
   for (auto it = map_.begin(); it != map_.end(); ++it) {
-    if (IsUnknownSize(it)) {
-      return false;
-    }
-    size_type new_beg = GetBegin(it);
-    if (new_beg != prev_end) {
+    if (IsUnknownSize(it) || (GetBegin(it) != prev_end)) {
       return false;
     }
     prev_end = GetEnd(it);
