@@ -140,8 +140,8 @@ bool RangeMap::TryGetEntry(size_type addr, range_type *type,
   } else {
     // TODO: overdose
     CHECK(IsEntryContains(it, addr));
-    *type = it->second.type;
-    *size = it->second.size;
+    *type = GetType(it);
+    *size = GetSize(it);
     return true;
   }
 }

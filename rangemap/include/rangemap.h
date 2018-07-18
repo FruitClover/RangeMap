@@ -97,6 +97,20 @@ class RangeMap {
     return it->second.size;
   }
 
+  template <class T>
+  size_type GetType(T it) const {
+    // TODO: accept end to simplified other functions
+    CHECK(!IsEnd(it));
+    return it->second.type;
+  }
+
+  template <class T>
+  void AddSize(T it, size_type added) {
+    CHECK(!IsEnd(it));
+    CHECK(!IsUnknownSize(added));
+    it->second.size += added;
+  }
+
   // Get entry that contains addr or the next one
   Map::const_iterator GetContainingOrNext(size_type addr) const;
   Map::iterator GetContainingOrNext(size_type addr);
