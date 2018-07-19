@@ -13,6 +13,7 @@ class RangeMap {
  public:
   typedef uint64_t size_type;
   typedef size_t range_type;
+  // TODO: option for strick new ranges without overlapping
   static const size_type kUnknownSize = std::numeric_limits<size_type>::max();
   static const size_type kNoRelative = std::numeric_limits<size_type>::max();
 
@@ -55,6 +56,7 @@ class RangeMap {
   void AddRangeFixedSize(size_type type, size_type addr, size_type size);
 
   // If size is unknown, return kUnknownSize;
+  // TODO: Replace with strict version?
   template <class T>
   size_type GetEnd(T it) const {
     // TODO: accept end to simplified other functions
@@ -118,6 +120,7 @@ class RangeMap {
   void SetAddress(T it, size_type new_addr) {
     // C++17 func
     CHECK(!IsEnd(it));
+    // TODO: May be skipped if will be used in other places
     CHECK(!IsUnknownSize(new_addr));
     if (GetBegin(it) == new_addr) {
       return;
@@ -141,7 +144,7 @@ class RangeMap {
   bool VerifyMappings() const;
 
   template <class T>
-  void UpdateSize(T it, size_type next_addr);
+  void MaybeUpdateUnknownSize(T it, size_type next_addr);
 
   template <class T>
   bool IsEnd(T it) const {

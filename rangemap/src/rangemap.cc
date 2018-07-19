@@ -78,20 +78,22 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
     if (IsEntryContains(it, addr)) {
       auto next = std::next(it);
       if (IsEnd(next)) {
-        // If prev is unknown size --> fix
-        if ((IsUnknownSize(it)) && (GetBegin(it) < base_beg)) {
-          it->second.size = addr - it->first;
-        }
+        // If prev is unknown size --> fix, can be only at the end of the
+        // mapping, previous entries are already fixed
+        MaybeUpdateUnknownSize(it, base_beg);
       } else {
         base_size = GetBegin(next) - GetEnd(it);
       }
       size_type it_end = GetEnd(it);
+      // Mapping unknown size on top of unknown size
+      // TODO: Add warning
       if (IsUnknownSize(it_end)) {
          return;
       }
       base_beg = it_end;
       ++it;
     } else {
+      // 'it' is the next enrty, calc new fixed size
       base_size = GetBegin(it) - addr;
     }
   }
@@ -243,6 +245,14 @@ RangeMap::Map::const_iterator RangeMap::GetContaining(size_type addr) const {
 template <class T>
 bool RangeMap::IsEntryContains(T it, size_type addr) const {
   return ((addr >= GetBegin(it)) && (GetEnd(it) > addr));
+}
+
+template <class T>
+void RangeMap::MaybeUpdateUnknownSize(T it, size_type next_addr) {
+  CHECK(!IsUnknownSize(next_addr));
+  if ((IsUnknownSize(it)) && (GetBegin(it) < next_addr)) {
+    it->second.size = next_addr - it->first;
+  }
 }
 
 template <class T>
