@@ -30,7 +30,7 @@ bool RangeMap::MaybeMergeEntry(T it, size_type type, size_type addr,
     // Merge into next entry
     if ((type == GetType(it)) && (GetBegin(it) == addr + size)) {
       AddSize(it, size);
-      SetAddress(it, addr);
+      SetEntryAddress(it, addr);
       is_merged = true;
     }
   }

@@ -117,7 +117,7 @@ class RangeMap {
   }
 
   template <class T>
-  void SetAddress(T it, size_type new_addr) {
+  void SetEntryAddress(T it, size_type new_addr) {
     // C++17 func
     CHECK(!IsEnd(it));
     // TODO: May be skipped if will be used in other places
