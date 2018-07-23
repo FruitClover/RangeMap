@@ -102,6 +102,7 @@ void RangeMap::AddRangeUnknownSize(size_type type, size_type addr) {
 }
 
 void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size) {
+  CHECK(!IsUnknownSize(size));
   auto it = GetContainingOrNext(addr);
 
   size_type base_beg = addr;
@@ -141,6 +142,7 @@ void RangeMap::AddRangeFixedSize(size_type type, size_type addr, size_type size)
 
 bool RangeMap::TryGetEntry(size_type addr, range_type *type,
                            size_type *size) const {
+  CHECK(!IsUnknownSize(addr));
   auto it = GetContaining(addr);
   if (IsEnd(it)) {
     return false;
@@ -154,6 +156,7 @@ bool RangeMap::TryGetEntry(size_type addr, range_type *type,
 }
 
 bool RangeMap::IsRangeCovered(size_type addr, size_type size) const {
+  CHECK(!IsUnknownSize(size));
   if (size == 0) {
     return true;
   }
