@@ -1,5 +1,4 @@
 // -*- C++ -*-
-
 #ifndef RANGEMAP_INCLUDE_H
 #define RANGEMAP_INCLUDE_H
 
@@ -32,7 +31,8 @@ class RangeMap {
   void AddRange(range_type type, size_type addr, size_type size);
 
   // Insert new entry [addr, addr + size] relative to rel_addr
-  void AddRangeRel(range_type type, size_type addr, size_type size, size_type rel_addr);
+  void AddRangeRel(range_type type, size_type addr, size_type size,
+                   size_type rel_addr);
 
   // If addr belongs to some entry, fill type and size for this entry
   bool TryGetEntry(size_type addr, range_type *type, size_type *size) const;
@@ -161,9 +161,7 @@ class RangeMap {
     return GetSize(it) == kUnknownSize;
   }
 
-  bool IsUnknownSize(size_type size) const {
-    return size == kUnknownSize;
-  }
+  bool IsUnknownSize(size_type size) const { return size == kUnknownSize; }
 
   template <class T>
   void MaybeMergeEntry(T it);
@@ -172,7 +170,7 @@ class RangeMap {
   void VerifyEntry(T it) const;
 
   // Find first gap between start and end, return map_.end() if none
-  template<class T>
+  template <class T>
   T FindFirstGap(T start, T end) const;
 
   friend class RangeMapTest;
